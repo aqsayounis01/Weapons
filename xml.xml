@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employees>
+    <employee id="1">
+        <name>John Doe</name>
+        <email>john.doe@example.com</email>
+        <department>Engineering</department>
+        <role>Software Engineer</role>
+    </employee>
+
+    <employee id="2">
+        <name>Jane Smith</name>
+        <email>jane.smith@example.com</email>
+        <department>HR</department>
+        <role>HR Manager</role>
+    </employee>
+</employees>

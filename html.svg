@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200">
+  <rect width="100%" height="100%" fill="lightgray"/>
+
+  <text x="20" y="40" font-size="20">
+    SVG Upload Test
+  </text>
+
+  <foreignObject x="20" y="60" width="300" height="120">
+    <body xmlns="http://www.w3.org/1999/xhtml">
+      <h3 style="color:red;">HTML inside SVG</h3>
+      <p>If this text appears, HTML is being rendered.</p>
+    </body>
+  </foreignObject>
+
+</svg>

